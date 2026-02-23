@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control | Luxe 33</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- VARIABLES Y FONDO --- */
+        :root { 
+            --accent: #c5a059; 
+            --dark: #0a0a0a; 
+            --white: #ffffff;
+            --glass: rgba(20, 20, 20, 0.85);
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 280px; 
+            background: rgba(0, 0, 0, 0.9); 
+            height: 100vh; 
+            position: fixed; 
+            padding: 30px; 
+            box-sizing: border-box; 
+            border-right: 1px solid rgba(197, 160, 89, 0.3);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        
+        .sidebar h2 { 
+            font-family: 'Cinzel', serif;
+            color: var(--accent); 
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar p { font-size: 0.8rem; color: #888; line-height: 1.5; }
+        
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main { 
+            margin-left: 280px; 
+            padding: 40px; 
+            width: calc(100% - 280px); 
+            box-sizing: border-box; 
+        }
+
+        .card { 
+            background: var(--glass); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
+            margin-bottom: 40px; 
+            backdrop-filter: blur(15px);
+        }
+
+        h3 { 
+            font-family: 'Cinzel', serif; 
+            color: var(--accent); 
+            margin-top: 0;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        /* --- FORMULARIO --- */
+        .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full { grid-column: 1 / -1; }
+        
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 13px; color: var(--accent); text-transform: uppercase; }
+        
+        input, textarea, select { 
+            width: 100%; 
+            padding: 14px; 
+            border: 1px solid #333; 
+            border-radius: 10px; 
+            background: rgba(0,0,0,0.4); 
+            color: white;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+        
+        input:focus, textarea:focus { border-color: var(--accent); background: rgba(0,0,0,0.6); }
+        
+        /* --- BOTONES --- */
+        .btn { 
+            padding: 15px 25px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            transition: 0.3s; 
+            font-size: 14px;
+        }
+        
+        .btn-save { 
+            background: linear-gradient(135deg, var(--accent) 0%, #8e6d2d 100%); 
+            color: black; 
+            width: 100%; 
+            margin-top: 20px; 
+        }
+
+        .btn-save:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(197, 160, 89, 0.4); }
+
+        .btn-edit { background: #2980b9; color: white; padding: 8px 12px; }
+        .btn-delete { background: #c0392b; color: white; padding: 8px 12px; }
+        
+        /* --- TABLA --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 15px; color: var(--accent); font-size: 12px; text-transform: uppercase; border-bottom: 2px solid #333; }
+        td { padding: 15px; border-bottom: 1px solid #222; font-size: 14px; }
+        
+        .img-mini { 
+            width: 60px; 
+            height: 60px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            border: 1px solid var(--accent);
+        }
+
+        .old-price { text-decoration: line-through; color: #777; font-size: 0.85em; margin-right: 5px; }
+        .promo-tag { background: var(--accent); color: black; padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main { margin-left: 0; width: 100%; padding: 20px; }
+            .form-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>LUXE 33</h2>
+        <p>CONTROL DE INVENTARIO</p>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0; width: 100%;">
+        <p><i class="fa-solid fa-cloud-arrow-up"></i> Sincronización activa con la tienda en vivo.</p>
+        <p style="margin-top: auto; font-size: 10px; letter-spacing: 1px;">© 2024 LUXE 33 PREMIUM</p>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <h3 id="form-title"><i class="fa-solid fa-plus-circle"></i> Gestionar Artículo</h3>
+            <div class="form-group">
+                <input type="hidden" id="edit-id">
+                <div class="full">
+                    <label>Imagen del Producto</label>
+                    <input type="file" id="p-file" accept="image/*">
+                </div>
+                <div class="full">
+                    <label>Nombre del Producto / Pack</label>
+                    <input type="text" id="p-name" placeholder="Ej: Invictus Platinum 100ml">
+                </div>
+                <div>
+                    <label>Precio de Venta</label>
+                    <input type="text" id="p-price" placeholder="Ej: $4.500">
+                </div>
+                <div>
+                    <label>Precio Anterior (Opcional)</label>
+                    <input type="text" id="p-old-price" placeholder="Ej: $5.900">
+                </div>
+                <div class="full">
+                    <label>Descripción Corta</label>
+                    <textarea id="p-desc" rows="3" placeholder="Notas olfativas o detalles de la oferta..."></textarea>
+                </div>
+                <div>
+                    <label>Categoría</label>
+                    <select id="p-type">
+                        <option value="perfume">Perfume Regular</option>
+                        <option value="promo">Oferta Especial</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Puntos de Lealtad</label>
+                    <input type="number" id="p-points" value="10">
+                </div>
+            </div>
+            <button class="btn btn-save" onclick="handleSave()">Publicar Cambios</button>
+            <button id="cancel-edit" class="btn" style="display:none; background:#444; color:white; width:100%; margin-top:10px;" onclick="resetForm()">Cancelar Edición</button>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-list"></i> Inventario en Nube</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vista</th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCk7SBzh9YfsWzu1FimDSQjr5Sr1xo8Ces",
+            authDomain: "perfumes-luxe.firebaseapp.com",
+            databaseURL: "https://perfumes-luxe-default-rtdb.firebaseio.com",
+            projectId: "perfumes-luxe",
+            storageBucket: "perfumes-luxe.firebasestorage.app",
+            messagingSenderId: "1893279285",
+            appId: "1:1893279285:web:e985b980103ccfee02f37c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let base64Image = "";
+
+        document.getElementById('p-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => { base64Image = reader.result; };
+            if(file) reader.readAsDataURL(file);
+        });
+
+        window.handleSave = async function() {
+            const id = document.getElementById('edit-id').value;
+            const data = {
+                nombre: document.getElementById('p-name').value,
+                precio: document.getElementById('p-price').value,
+                precioViejo: document.getElementById('p-old-price').value,
+                desc: document.getElementById('p-desc').value,
+                puntos: parseInt(document.getElementById('p-points').value) || 0,
+                tipo: document.getElementById('p-type').value
+            };
+
+            if(base64Image) data.img = base64Image;
+            if(!data.nombre || !data.precio) return alert("Completa los campos básicos.");
+
+            if(id) {
+                await update(ref(db, 'perfumes/' + id), data);
+            } else {
+                if(!base64Image) return alert("Sube una imagen para el producto.");
+                await push(ref(db, 'perfumes'), data);
+            }
+            resetForm();
+        }
+
+        onValue(ref(db, 'perfumes'), (snapshot) => {
+            const list = document.getElementById('inventory-list');
+            list.innerHTML = '';
+            snapshot.forEach(child => {
+                const p = child.val();
+                list.innerHTML += `
+                    <tr>
+                        <td><img src="${p.img}" class="img-mini"></td>
+                        <td>
+                            <b>${p.nombre}</b><br>
+                            <span style="font-size:11px; color:#888;">${p.desc ? p.desc.substring(0, 40) : ''}...</span>
+                        </td>
+                        <td>
+                            <span class="old-price">${p.precioViejo || ''}</span>
+                            <b>${p.precio}</b>
+                        </td>
+                        <td>${p.tipo == 'promo' ? '<span class="promo-tag">OFERTA</span>' : 'Regular'}</td>
+                        <td style="white-space:nowrap;">
+                            <button class="btn btn-edit" onclick="editItem('${child.key}', ${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-delete" onclick="deleteItem('${child.key}')"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        window.editItem = (id, data) => {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('p-name').value = data.nombre;
+            document.getElementById('p-price').value = data.precio;
+            document.getElementById('p-old-price').value = data.precioViejo || '';
+            document.getElementById('p-desc').value = data.desc;
+            document.getElementById('p-type').value = data.tipo;
+            document.getElementById('p-points').value = data.puntos;
+            document.getElementById('form-title').innerHTML = "<i class='fa-solid fa-pen-to-square'></i> Editando Artículo";
+            document.getElementById('cancel-edit').style.display = "block";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        };
+
+        window.deleteItem = (id) => {
+            if(confirm("¿Eliminar este producto permanentemente?")) {
+                remove(ref(db, 'perfumes/' + id));
+            }
+        };
+
+        window.resetForm = () => {
+            document.getElementById('edit-id').value = '';
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-old-price').value = '';
+            document.getElementById('p-desc').value = '';
+            document.getElementById('p-file').value = '';
+            document.getElementById('form-title').innerHTML = "<i class='fa-solid fa-plus-circle'></i> Gestionar Artículo";
+            document.getElementById('cancel-edit').style.display = "none";
+            base64Image = "";
+        };
+    </script>
+</body>
+</html>
